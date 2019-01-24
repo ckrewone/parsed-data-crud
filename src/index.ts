@@ -27,6 +27,7 @@ class Application {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             const db: IDatabase = new SqliteDatabase(DB_PATH);
             await db.createTable();
+            console.log(req.headers);
             try {
                 console.log(req.body);
                 if (typeof req.body === "string") { JSON.parse(req.body); }
@@ -67,7 +68,8 @@ class Application {
                         break;
                     }
                     default : {
-                        obj = undefined;
+                        res.status(404).send({message: "Unsuported Content-Accept"});
+                        return;
                     }
                 }
                 res.status(200).send(obj);
