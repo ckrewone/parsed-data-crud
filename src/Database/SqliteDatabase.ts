@@ -5,34 +5,33 @@ import {IDatabase} from "./IDatabase";
 export class SqliteDatabase implements IDatabase {
 
     protected db: sqlite3.Database;
+    private readonly dbPath: string;
 
-    constructor() {
-        this.db = new sqlite3.Database("./test.db", (err: any) => {
-            console.log(err ? "Unable to open database." + err : "Connected to database.");
-        });
-
+    constructor(dbPath: string) {
+        this.dbPath = dbPath;
     }
 
     public createTable(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.db.run("CREATE TABLE object (Id Int, Data Varchar)", (err: any) => {
+        return new Promise(async (resolve) => {
+            await this.open();
+            this.db.run("CREATE TABLE object (id Int, data Varchar)", (err: any) => {
                 if (err) {
-                    reject(err);
-                    console.log("Unable to create table");
+                    console.log("Unable to create table: " + err);
                 } else {
                     console.log("Table created");
-                    resolve();
                 }
-
+                resolve();
             });
+            this.close();
         });
     }
 
     public add(data: object): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<string>(async (resolve, reject) => {
             const id: string = uuid.v4();
+            await this.open();
             this.db.run(
-                `INSERT INTO object (Id, Data) VALUES(?, ?)`,
+                `INSERT INTO object (id, data) VALUES(?, ?)`,
                 [id, JSON.stringify(data)],
                 (err: any) => {
                     if (err) {
@@ -43,6 +42,7 @@ export class SqliteDatabase implements IDatabase {
                     }
                 },
             );
+            this.close();
         });
     }
 
@@ -51,8 +51,9 @@ export class SqliteDatabase implements IDatabase {
     }
 
     public get(id: string): Promise<object> {
-        return new Promise((resolve, reject) => {
-            this.db.get(`SELECT * FROM object WHERE Id = ?`, [id], (err: any, row: any) => {
+        return new Promise(async (resolve, reject) => {
+            await this.open();
+            this.db.get(`SELECT Data FROM object WHERE id = ?`, [id], (err: any, row: any) => {
                 if (err) {
                     reject(err);
                 } else if (row) {
@@ -61,6 +62,24 @@ export class SqliteDatabase implements IDatabase {
                     resolve({});
                 }
             });
+            this.close();
+        });
+
+    }
+
+    public getAll(): Promise<object> {
+        return new Promise(async (resolve, reject) => {
+            await this.open();
+            this.db.get(`SELECT * FROM object`, (err: any, row: any) => {
+                if (err) {
+                    reject(err);
+                } else if (row) {
+                    resolve(row);
+                } else {
+                    resolve({});
+                }
+            });
+            this.close();
         });
 
     }
@@ -68,7 +87,29 @@ export class SqliteDatabase implements IDatabase {
     public update(): void {
     }
 
-    public close(): void {
-        this.db.close((err) => console.log(err ? "Unable to close the database" : "Close the database connection"));
+    private close(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.db.close((err: any) => {
+                if (err) {
+                    console.log("Unable to close database" + err);
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    private open(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.db = new sqlite3.Database(this.dbPath, (err: any) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
     }
 }

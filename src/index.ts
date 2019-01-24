@@ -4,6 +4,10 @@ import * as bodyParserXml from "express-xml-bodyparser";
 import {IDatabase} from "./Database/IDatabase";
 import {SqliteDatabase} from "./Database/SqliteDatabase";
 
+
+const DB_PATH: string = "test.db";
+
+
 class Main {
 
     private app: express.Application;
@@ -35,31 +39,39 @@ class Main {
 
     private postObjectMiddleware(): (req: express.Request, res: express.Response, next: express.NextFunction) => any {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const db: IDatabase = new SqliteDatabase();
+            const db: IDatabase = new SqliteDatabase(DB_PATH);
+            await db.createTable();
             try {
-                await db.createTable();
-                const test = await db.add({test: "testujemyyy"});
-                res.status(200).send(test);
+                const addedId = await db.add(req.body);
+                res.status(200).send({id: addedId});
             } catch (e) {
                 console.log(e);
-                res.status(500).send("duppa");
-            } finally {
-                db.close();
+                res.status(500).send({
+                    message: "Shit, you broke something dude",
+                    error: JSON.stringify(e),
+                });
             }
         };
     }
 
     private getObjectMiddleware(): (req: express.Request, res: express.Response, next: express.NextFunction) => any {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            const db: IDatabase = new SqliteDatabase();
+            const db: IDatabase = new SqliteDatabase(DB_PATH);
             try {
-                const obj = await db.get(req.query.id);
+                let obj: any;
+                if (req.query.id) {
+                    obj = await db.get(req.query.id);
+                } else {
+                    obj = await db.getAll();
+                }
                 res.status(200).send(obj);
                 console.log(obj);
             } catch (e) {
                 console.log(e);
-            } finally {
-                db.close();
+                res.status(500).send({
+                    message: "Shit, you broke something dude",
+                    error: JSON.stringify(e),
+                });
             }
         };
     }
