@@ -1,8 +1,8 @@
 export interface IDatabase {
-    add(data:object): string;
-    get(id:string): object;
+    add(data: object): Promise<string>;
+    get(id: string): Promise<object>;
     delete(): void;
     update(): void;
     close(): void;
-    createTable(): void;
+    createTable(): Promise<void>;
 }
