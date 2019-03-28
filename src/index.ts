@@ -5,6 +5,7 @@ import * as js2xmlParser from "js2xmlparser";
 import {ContentTypes} from "./Constants/ContentTypes";
 import {IDatabase} from "./Database/IDatabase";
 import {SqliteDatabase} from "./Database/SqliteDatabase";
+import {error} from "util";
 
 const DB_PATH: string = "test.db";
 
@@ -27,9 +28,7 @@ class Application {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             const db: IDatabase = new SqliteDatabase(DB_PATH);
             await db.createTable();
-            console.log(req.headers);
             try {
-                console.log(req.body);
                 if (typeof req.body === "string") {
                     JSON.parse(req.body);
                 }
@@ -47,7 +46,17 @@ class Application {
 
     private patchObjectMiddleware(): (req: express.Request, res: express.Response, next: express.NextFunction) => any {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            console.log(req.body);
+            const db: IDatabase = new SqliteDatabase(DB_PATH);
+            try{
+                await db.patch(req.body.id, {data: req.body.data});
+            } catch (e) {
+                console.log('Unable to patch object', e);
+                res.status(500).send({
+                    error: JSON.stringify(e),
+                    message: "Shit, you broke something dude",
+                });
+            }
+            res.status(200).send("ok");
         };
     };
 
@@ -61,7 +70,6 @@ class Application {
                 } else {
                     obj = await db.getAll();
                 }
-                console.log(req.headers["content-accept"]);
                 let data: any;
                 if (typeof obj.data === 'string') {
                     data = JSON.parse(obj.data);
@@ -73,7 +81,6 @@ class Application {
                         })
                     }
                 }
-                console.log(data.body);
                 switch (req.headers["content-accept"]) {
                     case ContentTypes.JSON : {
                         obj = data;
@@ -91,7 +98,6 @@ class Application {
                     }
                 }
                 res.status(200).send(obj);
-                console.log(obj);
             } catch (e) {
                 console.log(e);
                 res.status(500).send({
