@@ -2,3 +2,5 @@
 node_modules/
 lib/
 coverage/
+.yarn-error.log
+test.db
