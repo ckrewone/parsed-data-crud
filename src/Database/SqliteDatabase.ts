@@ -70,7 +70,7 @@ export class SqliteDatabase implements IDatabase {
     public getAll(): Promise<object> {
         return new Promise(async (resolve, reject) => {
             await this.open();
-            this.db.get(`SELECT * FROM object`, (err: any, row: any) => {
+            this.db.all(`SELECT * FROM object`, (err: any, row: any) => {
                 if (err) {
                     reject(err);
                 } else if (row) {
@@ -84,7 +84,24 @@ export class SqliteDatabase implements IDatabase {
 
     }
 
-    public update(): void {
+    public put(): void {
+
+    }
+
+
+    public patch(id: string, data: object): Promise<boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {
+            await this.open();
+            this.db.run('UPDATE object SET data = ? WHERE id = ?', [JSON.stringify(data), id], (err: any) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            });
+            this.close();
+        });
+
     }
 
     private close(): Promise<boolean> {

@@ -30,7 +30,9 @@ class Application {
             console.log(req.headers);
             try {
                 console.log(req.body);
-                if (typeof req.body === "string") { JSON.parse(req.body); }
+                if (typeof req.body === "string") {
+                    JSON.parse(req.body);
+                }
                 const addedId = await db.add(req.body);
                 res.status(200).send({id: addedId});
             } catch (e) {
@@ -43,6 +45,12 @@ class Application {
         };
     }
 
+    private patchObjectMiddleware(): (req: express.Request, res: express.Response, next: express.NextFunction) => any {
+        return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+            console.log(req.body);
+        };
+    };
+
     private getObjectMiddleware(): (req: express.Request, res: express.Response, next: express.NextFunction) => any {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             const db: IDatabase = new SqliteDatabase(DB_PATH);
@@ -54,7 +62,17 @@ class Application {
                     obj = await db.getAll();
                 }
                 console.log(req.headers["content-accept"]);
-                const data = JSON.parse(obj.data);
+                let data: any;
+                if (typeof obj.data === 'string') {
+                    data = JSON.parse(obj.data);
+                } else {
+                    data = {
+                        data: obj.map((el: any) => {
+                            el.data = JSON.parse(el.data);
+                            return el;
+                        })
+                    }
+                }
                 console.log(data.body);
                 switch (req.headers["content-accept"]) {
                     case ContentTypes.JSON : {
@@ -63,7 +81,7 @@ class Application {
                         break;
                     }
                     case ContentTypes.XML : {
-                        obj = js2xmlParser.parse("data", data, {});
+                        obj = js2xmlParser.parse("result", data, {});
                         res.contentType(ContentTypes.XML);
                         break;
                     }
@@ -105,6 +123,7 @@ class Application {
     private routesRegister(): void {
         this.app.post("/object", this.postObjectMiddleware());
         this.app.get("/object", this.getObjectMiddleware());
+        this.app.patch('/object', this.patchObjectMiddleware());
     }
 }
 
