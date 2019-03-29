@@ -5,7 +5,7 @@ export interface IDatabase {
 
     getAll(): Promise<object>;
 
-    delete(): void;
+    delete(id: string): Promise<boolean>;
 
     put(): void;
 

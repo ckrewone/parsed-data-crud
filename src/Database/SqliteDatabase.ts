@@ -46,8 +46,17 @@ export class SqliteDatabase implements IDatabase {
         });
     }
 
-    public delete(): void {
-        return undefined;
+    public delete(id: string): Promise<boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {
+            await this.open();
+            this.db.run(`DELETE FROM object WHERE id = ?`, [id], (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
     }
 
     public get(id: string): Promise<object> {
@@ -92,8 +101,8 @@ export class SqliteDatabase implements IDatabase {
     public patch(id: string, data: object): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             await this.open();
-            this.db.run('UPDATE object SET data = ? WHERE id = ?', [JSON.stringify(data), id], (err: any) => {
-                if(err) {
+            this.db.run(`UPDATE object SET data = ? WHERE id = ?`, [JSON.stringify(data), id], (err: any) => {
+                if (err) {
                     reject(err);
                 } else {
                     resolve(true);
