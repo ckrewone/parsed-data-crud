@@ -1,9 +1,15 @@
-# ts-boilerplate
-Simple CRUD route which can convert data from xml/json/raw to xml/json/raw
+# parsed-data-crud
+
+The API is able to create/update/delete/find an object. We can set and get an object in xml/json alternately.
+#### Used technologies :
+- Node.js
+- TypeScript
+- MySQL
+- Express.js
 
 
+###  API
 
-###API
  `/object` `GET`/`POST`/`PATCH`/`DELETE`
  
  `GET` 
