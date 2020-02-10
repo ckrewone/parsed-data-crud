@@ -50,7 +50,7 @@ class Application {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             const db: IDatabase = new SqliteDatabase(DB_PATH);
             try {
-                await db.patch(req.body.id, {data: req.body.data});
+                await db.patch(req.query.id, {data: req.body});
             } catch (e) {
                 console.log("Unable to patch object", e);
                 res.status(500).send({
@@ -64,16 +64,16 @@ class Application {
 
     private deleteObjectMiddleware(): (req: express.Request, res: express.Response, next: express.NextFunction) => any {
         return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (req.body.id) {
+            if (req.query.id) {
                 const db: IDatabase = new SqliteDatabase(DB_PATH);
                 try {
-                    await db.delete(req.body.id);
+                    await db.delete(req.query.id);
                     res.status(200).send({data: "deleted"});
                 } catch (e) {
                     res.status(500).send({data: "Error", trace: e});
                 }
             } else {
-                res.status(400).send({data: "Empty body"});
+                res.status(400).send({data: "Id not found"});
             }
         };
     }

@@ -1,0 +1,147 @@
+{
+	"info": {
+		"_postman_id": "63605e3d-761d-43fa-92fc-6cf90ae5ebca",
+		"name": "CRUD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /object",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"test\": \"test data\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/object",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"object"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /object as JSON",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/object?id=393f9233-b6d8-4c8c-93b3-ac3646e17a8d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"object"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "393f9233-b6d8-4c8c-93b3-ac3646e17a8d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /object as XML",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/object?id=393f9233-b6d8-4c8c-93b3-ac3646e17a8d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"object"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "393f9233-b6d8-4c8c-93b3-ac3646e17a8d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /object",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<data>\n\t<test>1</test>\n\t<test>2</test>\n</data>"
+				},
+				"url": {
+					"raw": "http://localhost:3000/object?id=393f9233-b6d8-4c8c-93b3-ac3646e17a8d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"object"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "393f9233-b6d8-4c8c-93b3-ac3646e17a8d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /object",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

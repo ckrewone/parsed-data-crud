@@ -42,10 +42,11 @@ The API is able to create/update/delete/find an object. We can set and get an ob
       headers:
           Content-Type:  application/json | application/xml
           
+      query param:
+          id : UUIDv4
+               
       body:
-          {
-             "id" : "f4b06db1-1f3f-4458-9eb8-ec19019d0e6c"
-          }
+          data
       
       RESPONSE:
           status: 200
@@ -57,10 +58,9 @@ The API is able to create/update/delete/find an object. We can set and get an ob
       headers:
           Content-Type:  application/json | application/xml
           
-      body:
-          {
-             "id" : "f4b06db1-1f3f-4458-9eb8-ec19019d0e6c"
-          }
+      query param:
+          id : UUIDv4
+             
       
       RESPONSE:
           status: 200
